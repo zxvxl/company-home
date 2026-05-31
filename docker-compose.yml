@@ -28,8 +28,9 @@ services:
     image: postgres:15
     container_name: halo_database
     restart: unless-stopped
+    # 仅绑定 localhost，防止数据库端口暴露到外部网络（仅限开发环境使用）
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - pg_data:/var/lib/postgresql/data
     environment:
