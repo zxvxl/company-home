@@ -25,7 +25,7 @@ COPY . .
 RUN mvn clean package -DskipTests -B
 
 # --- 运行阶段 ---
-FROM docker.1ms.run/library/eclipse-temurin:17-jre-alpine
+FROM docker.1ms.run/library/eclipse-temurin:17-jre
 
 WORKDIR /app
 
