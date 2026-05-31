@@ -102,11 +102,31 @@ export const useApi = () => {
       params: { limit }
     })
 
+  /**
+   * 按栏目别名获取内容列表
+   */
+  const getContentsByCatalogAlias = (alias: string, pageNum = 1, pageSize = 10) =>
+    request<PageResult<ContentItem>>(`/catalog/alias/${alias}/contents`, {
+      params: { pageNum, pageSize }
+    })
+
+  /** HTML 内容净化（防 XSS） */
+  const sanitizeHtml = (html: string): string => {
+    if (!html) return ''
+    return html
+      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+      .replace(/on\w+\s*=\s*"[^"]*"/gi, '')
+      .replace(/on\w+\s*=\s*'[^']*'/gi, '')
+      .replace(/javascript:/gi, '')
+  }
+
   return {
     getSiteInfo,
     getCatalogs,
     getContentsByCatalog,
     getContentDetail,
-    getFeaturedContents
+    getFeaturedContents,
+    getContentsByCatalogAlias,
+    sanitizeHtml
   }
 }
