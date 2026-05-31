@@ -1,0 +1,589 @@
+<template>
+  <div class="app-container content-editor-container">
+    <el-row>
+      <el-col :span="24">
+        <div class="grid-btn-bar bg-purple-white">
+          <el-button plain type="success" size="mini" icon="el-icon-edit" @click="handleSave">{{ $t("Common.Save") }}</el-button>
+          <el-button plain type="primary" size="mini" icon="el-icon-s-promotion" @click="handlePublish">{{ $t('CMS.ContentCore.Publish') }}</el-button>
+          <el-button plain type="primary" size="mini" @click="handlePreview"><svg-icon icon-class="eye-open" class="mr5"></svg-icon>{{ $t('CMS.ContentCore.Preview') }}</el-button>
+          <el-button plain type="warning" v-if="isLock" size="mini" icon="el-icon-unlock" @click="handleChangeLockState">{{ $t('CMS.Content.Unlock') }}</el-button>
+          <el-button plain type="primary" v-else size="mini" icon="el-icon-lock" @click="handleChangeLockState">{{ $t('CMS.Content.Lock') }}</el-button>
+          <el-button v-if="openEditorW=='true'" plain type="warning" size="mini" icon="el-icon-close" @click="handleClose">{{ $t('Common.Close') }}</el-button>
+          <el-button v-else plain type="warning" size="mini" icon="el-icon-back" @click="handleGoBack">{{ $t('CMS.Content.BackToList') }}</el-button>
+        </div>
+      </el-col>
+    </el-row>
+    <el-row class="art-editor-container" :gutter="10" v-loading="loading">
+      <el-form ref="form" :model="form" :rules="rules" label-width="100px">
+        <el-col :span="16">
+          <el-row>
+            <el-col class="pr10">
+              <el-card shadow="always" class="card-title">
+                <div class="art-title bg-purple-white">
+                  <el-form-item :label="$t('CMS.Content.Title')" prop="title">
+                    <el-input
+                      v-model="form.title"
+                      maxlength="360"
+                      show-word-limit>
+                      <el-button
+                        slot="append"
+                        icon="el-icon-arrow-down"
+                        @click="toggleOtherTitle"
+                      ></el-button>
+                    </el-input>
+                  </el-form-item>
+                  <el-form-item
+                    :label="$t('CMS.Content.ShortTitle')"
+                    v-if="showOtherTitle"
+                    prop="shortTitle">
+                    <el-input v-model="form.shortTitle" maxlength="120" show-word-limit />
+                  </el-form-item>
+                  <el-form-item
+                    :label="$t('CMS.Content.SubTitle')"
+                    v-if="showOtherTitle"
+                    prop="subTitle">
+                    <el-input v-model="form.subTitle" maxlength="120" show-word-limit />
+                  </el-form-item>
+                  <el-form-item
+                    :label="$t('CMS.Content.LinkFlag')"
+                    prop="linkFlag">
+                    <el-checkbox v-model="form.linkFlag" true-label="Y" false-label="N"></el-checkbox>
+                  </el-form-item>
+                  <el-form-item
+                    :label="$t('CMS.Content.RedirectUrl')"
+                    v-if="form.linkFlag==='Y'"
+                    prop="redirectUrl">
+                    <el-input v-model="form.redirectUrl" placeholder="http(s)://" class="mb12" />
+                    <el-dropdown @command="handleLinkTo">
+                      <el-button
+                        type="primary">
+                        {{ $t('CMS.ContentCore.InternalUrl') }}<i class="el-icon-arrow-down el-icon--right"></i>
+                      </el-button>
+                      <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item command="content">{{ $t('CMS.ContentCore.SelectContent') }}</el-dropdown-item>
+                        <el-dropdown-item command="catalog">{{ $t('CMS.ContentCore.SelectCatalog') }}</el-dropdown-item>
+                      </el-dropdown-menu>
+                    </el-dropdown>
+                  </el-form-item>
+                </div>
+              </el-card>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col class="pr10">
+              <el-card v-if="xmodelVisible" shadow="always" class="card-exmodel">
+                <cms-exmodel-editor 
+                  ref="EXModelEditor"
+                  :xmodel="form.catalogConfigProps.ContentExtendModel" 
+                  :pk="form.contentId">
+                </cms-exmodel-editor>
+              </el-card>
+            </el-col>
+          </el-row>
+          <el-row v-if="this.form.linkFlag !== 'Y' && this.contentType === 'article'">
+            <el-col class="pr10">
+              <el-card shadow="always">
+                <el-form-item :label="$t('CMS.Content.DownloadImage')" prop="downloadRemoteImage">
+                  <el-switch
+                    v-model="form.downloadRemoteImage"
+                    active-value="Y"
+                    inactive-value="N" />
+                    <span style="color: #909399;font-size:12px;"><i class="el-icon-info mr5 ml10"></i>{{ $t('CMS.Content.DownloadImageTip') }}</span>
+                </el-form-item>
+              </el-card>
+              <el-card shadow="always" class="card-editor">
+                <div class="content bg-purple-white">
+                  <ueditor v-model="form.contentHtml" :height="800"></ueditor>
+                </div>
+              </el-card>
+            </el-col>
+          </el-row>
+          <el-row v-if="this.form.linkFlag !== 'Y' && this.contentType === 'image'">
+            <el-col class="pr10">
+              <cms-image-editor v-model="form.imageList" @choose="handleSetLogo"></cms-image-editor>
+            </el-col>
+          </el-row>
+          <el-row v-if="this.form.linkFlag !== 'Y' && this.contentType === 'audio'">
+            <el-col class="pr10">
+              <cms-audio-editor v-model="form.audioList" :logo="form.logoSrc"></cms-audio-editor>
+            </el-col>
+          </el-row>
+          <el-row v-if="this.form.linkFlag !== 'Y' && this.contentType === 'video'">
+            <el-col class="pr10">
+              <cms-video-editor v-model="form.videoList"></cms-video-editor>
+            </el-col>
+          </el-row>
+        </el-col>
+        <el-col :span="8">
+          <div class="bg-purple-white">
+            <el-card shadow="always">
+              <el-tabs v-model="activeName" @tab-click="handleTabClick">
+                <el-tab-pane :label="$t('CMS.Content.Basic')" name="basic">
+                  <el-form-item :label="$t('CMS.Content.Catalog')" prop="catalogId">
+                    <el-button-group>
+                      <el-button plain type="primary" style="width:152px;" disabled>{{ form.catalogName }}</el-button>
+                      <el-button type="primary" icon="el-icon-edit" @click="handleCatalogChange"></el-button>
+                    </el-button-group>
+                  </el-form-item>
+                  <el-form-item :label="$t('CMS.Content.Logo')" prop="logo">
+                    <cms-logo-view v-model="form.logo" :src="form.logoSrc"
+                                   :width="210" :height="150"></cms-logo-view>
+                  </el-form-item>
+                  <el-form-item :label="$t('CMS.Content.Author')" prop="author">
+                    <el-input v-model="form.author" />
+                  </el-form-item>
+                  <el-form-item :label="$t('CMS.Content.Editor')" prop="editor">
+                    <el-input v-model="form.editor" />
+                  </el-form-item>
+                  <el-form-item :label="$t('CMS.Content.Original')" prop="original">
+                    <el-switch
+                      v-model="form.original"
+                      active-value="Y"
+                      inactive-value="N"
+                    ></el-switch>
+                  </el-form-item>
+                  <el-form-item :label="$t('CMS.Content.Attribute')" prop="attributes">
+                    <el-checkbox-group v-model="form.attributes">
+                      <el-checkbox v-for="dict in dict.type.CMSContentAttribute" :label="dict.value" :key="dict.value">{{ dict.label }}</el-checkbox>
+                    </el-checkbox-group>
+                  </el-form-item>
+                  <el-form-item :label="$t('CMS.Content.Summary')" prop="summary">
+                    <el-input type="textarea" v-model="form.summary" :autosize="summaryInputSize" maxlength="500" show-word-limit />
+                  </el-form-item>
+                  <el-form-item :label="$t('CMS.Content.Tags')" prop="tags">
+                    <cms-tag-editor v-model="form.tags"></cms-tag-editor>
+                  </el-form-item>
+                  <el-form-item :label="$t('CMS.Content.Keywords')" prop="keywords">
+                    <cms-tag-editor v-model="form.keywords"></cms-tag-editor>
+                  </el-form-item>
+                  <el-form-item :label="$t('CMS.Content.Source')" prop="source">
+                    <el-input v-model="form.source" />
+                  </el-form-item>
+                  <el-form-item :label="$t('CMS.Content.SourceUrl')" prop="sourceUrl">
+                    <el-input v-model="form.sourceUrl" placeholder="http(s)://" />
+                  </el-form-item>
+                  <el-divider></el-divider>
+                  <el-form-item :label="$t('CMS.Content.PublishDate')" prop="publishDate">
+                    <el-date-picker v-model="form.publishDate" value-format="yyyy-MM-dd HH:mm:ss" type="datetime" style="width:195px;" />
+                  </el-form-item>
+                  <el-form-item :label="$t('CMS.Content.OfflineDate')" prop="offlineDate">
+                    <el-date-picker v-model="form.offlineDate" value-format="yyyy-MM-dd HH:mm:ss" type="datetime" style="width:195px;" />
+                  </el-form-item>
+                  <el-form-item :label="$t('CMS.Content.PublishPipe')" prop="publishPipe">
+                    <el-checkbox-group v-model="form.publishPipe">
+                      <el-checkbox v-for="pp in publishPipeTemplates" :label="pp.pipeCode" :key="pp.pipeCode">{{ pp.pipeName }}</el-checkbox>
+                    </el-checkbox-group>
+                  </el-form-item>
+                  <el-form-item :label="$t('CMS.Content.StaticPath')">
+                    <el-input v-model="form.staticPath" placeholder="请输入相对站点路径..." />
+                  </el-form-item>
+                  <el-form-item :label="$t('CMS.Content.Template')">
+                    <el-switch v-model="showTemplate" @change="handleShowTemplateChange" />
+                  </el-form-item>
+                  <el-form-item v-show="showTemplate" 
+                                v-for="pp in publishPipeTemplates" 
+                                :label="pp.pipeName" 
+                                :key="pp.pipeCode" 
+                                :prop="'template_' + pp.value">
+                    <el-input v-model="pp.props.template">
+                      <el-button slot="append" icon="el-icon-folder-opened" @click="handleSelectTemplate(pp)"></el-button>
+                    </el-input>
+                  </el-form-item>
+                </el-tab-pane>
+                <!-- <el-tab-pane label="扩展配置" name="extend">
+                </el-tab-pane> -->
+              </el-tabs>
+            </el-card>
+          </div>
+        </el-col>
+      </el-form>
+    </el-row>
+    <!-- 素材选择组件 -->
+    <cms-resource-dialog 
+      :open.sync="openResourceDialog"
+      :upload-limit="1"
+      @ok="handleResourceDialogOk">
+    </cms-resource-dialog>
+    <!-- 模板选择组件 -->
+    <cms-template-selector :open="openTemplateSelector" 
+                       :publishPipeCode="publishPipeActiveName"
+                       @ok="handleTemplateSelected"
+                       @cancel="handleTemplateSelectorCancel" />
+    <!-- 栏目选择组件 -->
+    <cms-catalog-selector
+      :open="openCatalogSelector"
+      @ok="handleCatalogSelectorOk"
+      @close="handleCatalogSelectorClose"></cms-catalog-selector>
+    <!-- 内容选择组件 -->
+    <cms-content-selector
+      :open="openContentSelector"
+      @ok="handleContentSelectorOk"
+      @close="handleContentSelectorClose"></cms-content-selector>
+    <!-- 进度条 -->
+    <cms-progress :title="progressTitle" :open.sync="openProgress" :taskId="taskId" @close="handleProgressClose"></cms-progress>
+  </div>
+</template>
+<script>
+import { getInitContentEditorData, addContent, saveContent, publishContent, lockContent, unLockContent, moveContent } from "@/api/contentcore/content";
+import Sticky from '@/components/Sticky'
+// import CKEditor5 from '@/components/CKEditor5';
+import UEditor from '@/views/cms/components/UEditorPlus'
+import CMSProgress from '@/views/components/Progress';
+import CMSImageEditor from '@/views/cms/imageAlbum/editor';
+import CMSAudioEditor from '@/views/cms/media/audioEditor';
+import CMSVideoEditor from '@/views/cms/media/videoEditor';
+import CMSLogoView from '@/views/cms/components/LogoView';
+import CMSResourceDialog from "@/views/cms/contentcore/resourceDialog";
+import CMSCatalogSelector from "@/views/cms/contentcore/catalogSelector";
+import CMSContentSelector from "@/views/cms/contentcore/contentSelector";
+import CMSTemplateSelector from '@/views/cms/contentcore/templateSelector';
+import CMSEXModelEditor from '@/views/cms/components/EXModelEditor';
+import CMSTagEditor from '@/views/cms/components/TagEditor';
+
+import Treeselect from "@riophae/vue-treeselect";
+import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+
+export default {
+  name: "CMSContentEditor",
+  dicts: ['CMSContentAttribute', 'CMSContentStatus'],
+  components: {
+    Treeselect, 
+    Sticky,
+    'ueditor': UEditor,
+    'cms-template-selector': CMSTemplateSelector,
+    'cms-progress': CMSProgress,
+    "cms-image-editor": CMSImageEditor,
+    "cms-audio-editor": CMSAudioEditor,
+    "cms-video-editor": CMSVideoEditor,
+    "cms-resource-dialog": CMSResourceDialog,
+    "cms-logo-view": CMSLogoView,
+    'cms-catalog-selector': CMSCatalogSelector,
+    'cms-content-selector': CMSContentSelector,
+    "cms-exmodel-editor": CMSEXModelEditor,
+    "cms-tag-editor": CMSTagEditor,
+    // "ckeditor": CKEditor5
+  },
+  computed: {
+    isLock () {
+      return this.form.isLock === 'Y' && this.form.lockUser != '';
+    },
+    xmodelVisible() {
+      return this.form.catalogConfigProps 
+        && this.form.catalogConfigProps.ContentExtendModel != null 
+        && this.form.catalogConfigProps.ContentExtendModel.length > 0;
+    }
+  },
+  data() {
+    return {
+      // 遮罩层
+      loading: false,
+      openProgress: false,
+      progressTitle: "",
+      taskId: "",
+      showOtherTitle: false,
+      showTemplate: false,
+      activeName: "basic",
+      catalogId: this.$route.query.catalogId || '0',
+      contentId: this.$route.query.id || '0',
+      openEditorW: this.$route.query.w,
+      contentType: this.$route.query.type,
+      opType: !this.$route.query.id || this.$route.query.id == '0' ? 'ADD' : 'UPDATE',
+      openCatalogSelector: false,
+      catalogSelectorFor: undefined,
+      openContentSelector: false,
+      // 表单参数
+      form: {
+        attributes: [],
+        contentJson: [],
+        contentHtml: "",
+        downloadRemoteImage: "Y",
+        original: "N",
+        publishPipe: [],
+        imageList: [],
+        tags:[],
+        keywords:[]
+      },
+      initDataStr: undefined, // 初始化数据jsonString
+      publishPipeTemplates: [],
+      rules: {
+        title: [{ required: true, message: this.$t('CMS.Content.RuleTips.Title'), trigger: "blur" }]
+      },
+      openResourceDialog: false,
+      summaryInputSize: { minRows: 3, maxRows: 6 },
+      openTemplateSelector: false, // 模板选择弹窗
+      publishPipeActiveName: "",
+    };
+  },
+  created() {
+    this.initData();
+  },
+  methods: {
+    handleTabClick(tab, event) {
+    },
+    toggleOtherTitle() {
+      this.showOtherTitle = !this.showOtherTitle;
+    },
+    onEditorReady( editor )  {
+      console.log("ckeditor", "onready");
+      // 设置下编辑器最小高度
+      editor.editing.view.change(writer => {
+        writer.setStyle('min-height', '800px', editor.editing.view.document.getRoot());
+      });
+      // 图片上传
+      editor.plugins.get('FileRepository').createUploadAdapter = (loader) => {
+        return new ImageUploadAdapter(loader, process.env.VUE_APP_BASE_API + "/cms/resource/upload")
+      }
+    },
+    initData() {
+      this.loading = true;
+      getInitContentEditorData(this.catalogId, this.contentType, this.contentId).then(response => {
+        this.loading = false;
+        response.data.attributes = response.data.attributes || [];
+        response.data.tags = response.data.tags || [];
+        response.data.keywords = response.data.keywords || [];
+        this.form = response.data;
+        this.catalogId = this.form.catalogId;
+        this.contentId = this.form.contentId;
+        this.contentType = this.form.contentType;
+        this.publishPipeTemplates = this.form.publishPipeTemplates;
+        this.showOtherTitle = 'Y' === this.form.showSubTitle || (this.form.shortTitle && this.form.shortTitle.length > 0) 
+          || (this.form.subTitle && this.form.subTitle.length > 0);
+        this.publishPipeTemplates.forEach(pp => {
+          if (pp.props.template != null && pp.props.template != "") {
+            this.showTemplate = true;
+          }
+        });
+        this.initDataStr = JSON.stringify(this.form);
+      });
+    },
+    handleShowOtherTitle() {
+      this.showOtherTitle = !this.showOtherTitle;
+    },
+    isFormChanged() {
+      return JSON.stringify(this.form) != this.initDataStr;
+    },
+    handleGoBack() {
+      const that = this;
+      if (this.isFormChanged()) {
+        this.$confirm(this.$t('CMS.Content.CloseContentEditorTip'), this.$t('Common.SystemTip'), {
+          confirmButtonText: this.$t('Common.Confirm'),
+          cancelButtonText: this.$t('Common.Cancel'),
+          type: "warning",
+        }).then(function () {
+          const obj = { path: "/configs/content" };
+          that.$tab.closeOpenPage(obj);
+        }).catch(function () { });
+      } else {
+        const obj = { path: "/configs/content" };
+        this.$tab.closeOpenPage(obj);
+      }
+    },
+    handleClose() {
+      if (this.isFormChanged()) {
+        this.$confirm(this.$t('CMS.Content.CloseContentEditorTip'), this.$t('Common.SystemTip'), {
+          confirmButtonText: this.$t('Common.Confirm'),
+          cancelButtonText: this.$t('Common.Cancel'),
+          type: "warning",
+        }).then(function () {
+          window.close();
+        }).catch(function () { });
+      } else {
+        window.close();
+      }
+    },
+    // 表单重置
+    reset() {
+      this.form = {};
+      this.resetForm("form");
+    },
+    handleShowTemplateChange() {
+      if (!this.showTemplate) {
+        this.publishPipeTemplates.forEach((pp, i) => {
+          pp.props.template = "";
+        });
+      }
+    },
+    handleSelectTemplate(publishPipe) {
+      this.publishPipeActiveName = publishPipe.pipeCode;
+      this.$nextTick(() => {
+        this.openTemplateSelector = true;
+      })
+    },
+    handleTemplateSelected (template) {
+      this.publishPipeTemplates.map(pp => {
+        if (pp.pipeCode == this.publishPipeActiveName) {
+          pp.props.template = template;
+        }
+      });
+      this.openTemplateSelector = false;
+    },
+    handleTemplateSelectorCancel () {
+      this.openTemplateSelector = false;
+    },
+    handleSetLogo(path, src) {
+      this.$set(this.form, "logoSrc", src);
+      this.form.logo = path;
+    },
+    handleLogoClick() {
+      this.openResourceDialog = true;
+    },
+    handleResourceDialogOk (results) {
+      if (results && results.length == 1) {
+        this.form.logo = results[0].path;
+        this.form.logoSrc = results[0].src;
+      }
+    },
+    /** 提交 */
+    handleSave: function() {
+      this.$refs["form"].validate(valid => {
+        if (valid) {
+          this.form.template = {};
+          this.publishPipeTemplates.map(item => {
+            this.form.template[item.pipeCode] = item.props.template;
+          });
+          if (this.xmodelVisible) {
+            this.form.params = this.$refs.EXModelEditor.getDatas();
+          }
+          this.form.opType = this.opType;
+          if (this.opType == 'UPDATE') {
+            saveContent(this.form).then(response => {
+              this.taskId = response.data.taskId;
+              this.openProgress = true;
+              this.progressTitle = this.$t('CMS.Content.SaveProgressTitle')
+            });
+          } else {
+            this.form.catalogId = this.catalogId;
+            this.form.contentType = this.contentType;
+            addContent(this.form).then(response => {
+              this.taskId = response.data.taskId;
+              this.openProgress = true;
+              this.progressTitle = this.$t('CMS.Content.SaveProgressTitle')
+            });
+          }
+        }
+      });
+    },
+    handlePublish () {
+      publishContent([ this.form.contentId ]).then(response => {
+          this.$modal.msgSuccess(this.$t('CMS.ContentCore.PublishSuccess'));
+      });
+    },
+    handleProgressClose (result) {
+      if (result.status == 'SUCCESS') {
+        if (this.opType == 'ADD') {
+          if (this.openEditorW == 'true') {
+            this.$router.push({ path: "/cms/content/editorW", query: { type: this.contentType, catalogId: this.catalogId, id: this.contentId } });
+          } else {
+            this.$router.push({ path: "/cms/content/editor", query: { type: this.contentType, catalogId: this.catalogId, id: this.contentId } });
+          }
+        }
+        this.initData();
+      }
+    },
+    handlePreview () {
+      let routeData = this.$router.resolve({
+        path: "/cms/preview",
+        query: { type: "content", dataId: this.form.contentId },
+      });
+      window.open(routeData.href, '_blank');
+    },
+    handleChangeLockState () {
+      if (this.isLock) {
+        unLockContent(this.form.contentId).then(response => {
+          this.form.isLock = 'N';
+          this.$modal.msgSuccess(this.$t('Common.OpSuccess'));
+        });
+      } else {
+        lockContent(this.form.contentId).then(response => {
+          this.form.isLock = 'Y';
+          this.form.lockUser = response.data;
+          this.$modal.msgSuccess(this.$t('Common.OpSuccess'));
+        });
+      }
+    },
+    handleCatalogChange() {
+      this.openCatalogSelector = true;
+      this.catalogSelectorFor = "change";
+    },
+    handleCatalogSelectorOk(catalogs) {
+      if (this.catalogSelectorFor === 'change') {
+        if (this.form.contentId && this.form.contentId != null) {
+          // 编辑内容
+          if (this.form.catalogId != catalogs[0].id) {
+            const data = {
+              contentIds: [ this.form.contentId ],
+              catalogId: catalogs[0].id
+            };
+            moveContent(data).then(response => {
+              if (response.code == 200) {
+                this.$modal.msgSuccess(this.$t('Common.OpSuccess'));
+                this.form.catalogId = catalogs[0].id;
+                this.form.catalogName = catalogs[0].name;
+              }
+            });
+          }
+        } else {
+          // 新建内容
+          this.form.catalogId = catalogs[0].id;
+          this.form.catalogName = catalogs[0].name;
+        }
+      } else if(this.catalogSelectorFor === 'linkflag') {
+        if (catalogs && catalogs.length > 0) {
+          this.form.redirectUrl = catalogs[0].internalUrl;
+        }
+      }
+      this.openCatalogSelector = false;
+    },
+    handleCatalogSelectorClose() {
+      this.openCatalogSelector = false;
+    },
+    handleLinkTo(type) {
+      if (type === 'content') {
+        this.openContentSelector = true;
+      } else if (type === 'catalog') {
+        this.openCatalogSelector = true;
+        this.catalogSelectorFor = 'linkflag';
+      }
+    },
+    handleContentSelectorOk(contents) {
+      if (contents && contents.length > 0) {
+        this.form.redirectUrl = contents[0].internalUrl;
+        this.openContentSelector = false;
+      } else {
+        this.$modal.msgWarning(this.$t('Common.SelectFirst'));
+      }
+    },
+    handleContentSelectorClose() {
+      this.openContentSelector = false;
+    }
+  }
+};
+</script>
+<style scoped>
+.content-editor-container .el-form {
+    width: 100%;
+}
+.content-editor-container .el-form-item {
+  margin-bottom: 5px;  
+}
+.content-editor-container .card-title {
+  margin-bottom: 5px;
+}
+.content-editor-container .card-title .el-card__body {
+  padding-bottom: 10px;
+}
+.content-editor-container .card-editor {
+  margin-top: 10px;
+  min-height: 700px;
+}
+.content-editor-container .art-editor-container {
+  margin-top: 10px;
+  /* max-width: 1320px; */
+}
+.content-editor-container #toolbar-container {
+  z-index: 101;
+}
+.content-editor-container #editor-container {
+  z-index: 100;
+}
+</style>
