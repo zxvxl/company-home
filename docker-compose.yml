@@ -1,5 +1,55 @@
 services:
   # -------------------------------------------------------
+  # MySQL 8.0（项目专用，独立于本地其他服务）
+  # -------------------------------------------------------
+  mysql:
+    image: docker.1ms.run/library/mysql:8.0
+    container_name: company-mysql
+    restart: unless-stopped
+    ports:
+      - "13307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: ry_cms
+      MYSQL_USER: cms
+      MYSQL_PASSWORD: 123456
+      TZ: Asia/Shanghai
+    volumes:
+      - mysql_data:/var/lib/mysql
+    command: >
+      --default-authentication-plugin=caching_sha2_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_general_ci
+      --lower-case-table-names=1
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - company-net
+
+  # -------------------------------------------------------
+  # Redis 7（项目专用）
+  # -------------------------------------------------------
+  redis:
+    image: docker.1ms.run/library/redis:7-alpine
+    container_name: company-redis
+    restart: unless-stopped
+    ports:
+      - "16379:6379"
+    command: redis-server --requirepass 123456 --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "123456", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - company-net
+
+  # -------------------------------------------------------
   # CMS 后端（Spring Boot）
   # -------------------------------------------------------
   cms-server:
@@ -13,19 +63,21 @@ services:
     volumes:
       - cms_uploads:/app/uploadPath
     environment:
-      # 数据库配置
-      SPRING_DATASOURCE_DRUID_MASTER_URL: jdbc:mysql://127.0.0.1:13306/xianyu_data?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
-      SPRING_DATASOURCE_DRUID_MASTER_USERNAME: xianyu
-      SPRING_DATASOURCE_DRUID_MASTER_PASSWORD: xianyu@2026
-      # Redis 配置
-      SPRING_DATA_REDIS_HOST: 127.0.0.1
+      SPRING_DATASOURCE_DRUID_MASTER_URL: jdbc:mysql://mysql:3306/ry_cms?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_DRUID_MASTER_USERNAME: root
+      SPRING_DATASOURCE_DRUID_MASTER_PASSWORD: 123456
+      SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
-      SPRING_DATA_REDIS_PASSWORD: xianyu@2026
-      SPRING_DATA_REDIS_DATABASE: 1
-      # 文件上传路径
+      SPRING_DATA_REDIS_PASSWORD: 123456
+      SPRING_DATA_REDIS_DATABASE: 0
       RUOYI_SYSTEM_UPLOADPATH: /app/uploadPath
-    # 使用 host 网络模式，直接访问宿主机的 MySQL 和 Redis
-    network_mode: host
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - company-net
 
   # -------------------------------------------------------
   # Nuxt3 官网前台
@@ -39,9 +91,17 @@ services:
     ports:
       - "3000:3000"
     environment:
-      NUXT_PUBLIC_API_BASE: http://127.0.0.1:8080
-    network_mode: host
+      NUXT_PUBLIC_API_BASE: http://cms-server:8080
+    depends_on:
+      - cms-server
+    networks:
+      - company-net
 
 volumes:
+  mysql_data:
+  redis_data:
   cms_uploads:
-    driver: local
+
+networks:
+  company-net:
+    driver: bridge
