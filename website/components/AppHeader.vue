@@ -60,11 +60,14 @@ interface NavItem {
   children?: NavChild[]
 }
 
+const { getCatalogs } = useApi()
+
 const isScrolled = ref(false)
 const menuOpen = ref(false)
 const activeDropdown = ref<string | null>(null)
 
-const navItems: NavItem[] = [
+// Fallback 导航（API 不通时使用）
+const fallbackNav: NavItem[] = [
   { label: '首页', path: '/' },
   {
     label: '关于我们',
@@ -81,6 +84,50 @@ const navItems: NavItem[] = [
   { label: '联系我们', path: '/contact' }
 ]
 
+const navItems = ref<NavItem[]>(fallbackNav)
+
+onMounted(async () => {
+  window.addEventListener('scroll', handleScroll)
+  document.addEventListener('click', handleClickOutside)
+
+  // 从 CMS 动态获取栏目数据
+  try {
+    const catalogs = await getCatalogs()
+    if (catalogs && catalogs.length > 0) {
+      navItems.value = buildNavTree(catalogs)
+    }
+  } catch {
+    // 使用 fallback
+  }
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
+  document.removeEventListener('click', handleClickOutside)
+})
+
+/**
+ * 根据 parentId 构建树形导航
+ * - 栏目 name 作为显示文字
+ * - 栏目 alias 作为路由路径
+ */
+function buildNavTree(catalogs: any[]): NavItem[] {
+  const rootItems = catalogs.filter(c => !c.parentId || c.parentId === 0)
+  return rootItems.map(item => {
+    const children = catalogs.filter(c => c.parentId === item.catalogId)
+    if (children.length > 0) {
+      return {
+        label: item.name,
+        children: children.map(child => ({
+          label: child.name,
+          path: `/${child.alias || child.catalogId}`
+        }))
+      }
+    }
+    return { label: item.name, path: `/${item.alias || item.catalogId}` }
+  })
+}
+
 function toggleDropdown(label: string) {
   activeDropdown.value = activeDropdown.value === label ? null : label
 }
@@ -89,16 +136,6 @@ function closeAll() {
   menuOpen.value = false
   activeDropdown.value = null
 }
-
-onMounted(() => {
-  window.addEventListener('scroll', handleScroll)
-  document.addEventListener('click', handleClickOutside)
-})
-
-onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll)
-  document.removeEventListener('click', handleClickOutside)
-})
 
 function handleScroll() {
   isScrolled.value = window.scrollY > 50

@@ -13,6 +13,21 @@ export default defineNuxtConfig({
       ],
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      ],
+      script: [
+        // 百度统计（替换为实际统计代码）
+        {
+          children: `
+            var _hmt = _hmt || [];
+            (function() {
+              var hm = document.createElement("script");
+              hm.src = "https://hm.baidu.com/hm.js?YOUR_BAIDU_TONGJI_ID";
+              var s = document.getElementsByTagName("script")[0];
+              s.parentNode.insertBefore(hm, s);
+            })();
+          `,
+          type: 'text/javascript'
+        }
       ]
     }
   },
@@ -26,6 +41,20 @@ export default defineNuxtConfig({
     public: {
       apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:8080'
     }
+  },
+
+  routeRules: {
+    // 不常变的页面启用 ISR（1小时缓存）
+    '/about': { isr: 3600 },
+    '/qualifications': { isr: 3600 },
+    '/safety': { isr: 3600 },
+    '/business': { isr: 3600 },
+    '/contact': { isr: 3600 },
+    // 新闻和案例列表（10分钟缓存）
+    '/news': { isr: 600 },
+    '/cases': { isr: 600 },
+    // 首页（5分钟缓存）
+    '/': { isr: 300 },
   },
 
   compatibilityDate: '2024-04-01'

@@ -119,6 +119,15 @@ export const useApi = () => {
   /** 获取招聘岗位列表 */
   const getCareerList = (pageNum = 1, pageSize = 20) => getContentsByCatalogAlias('careers', pageNum, pageSize)
 
+  /** 拼接 CMS 图片完整 URL */
+  const getImageUrl = (path: string | undefined | null): string => {
+    if (!path) return '/placeholder.svg'
+    // 如果已经是完整 URL，直接返回
+    if (path.startsWith('http://') || path.startsWith('https://')) return path
+    // 拼接 CMS 后端地址
+    return `${baseURL}${path.startsWith('/') ? '' : '/'}${path}`
+  }
+
   /** HTML 内容净化（防 XSS） */
   const sanitizeHtml = (html: string): string => {
     if (!html) return ''
@@ -139,6 +148,7 @@ export const useApi = () => {
     getQualifications,
     getSafetyNews,
     getCareerList,
+    getImageUrl,
     sanitizeHtml
   }
 }
