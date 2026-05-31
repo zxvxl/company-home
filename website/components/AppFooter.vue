@@ -32,8 +32,11 @@
           <h4>快速导航</h4>
           <ul>
             <li><NuxtLink to="/about">关于我们</NuxtLink></li>
+            <li><NuxtLink to="/qualifications">资质荣誉</NuxtLink></li>
             <li><NuxtLink to="/cases">工程案例</NuxtLink></li>
+            <li><NuxtLink to="/safety">安全生产</NuxtLink></li>
             <li><NuxtLink to="/news">新闻中心</NuxtLink></li>
+            <li><NuxtLink to="/careers">人才招聘</NuxtLink></li>
             <li><NuxtLink to="/contact">联系我们</NuxtLink></li>
           </ul>
         </div>

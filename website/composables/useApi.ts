@@ -110,6 +110,15 @@ export const useApi = () => {
       params: { pageNum, pageSize }
     })
 
+  /** 获取资质荣誉内容 */
+  const getQualifications = () => getContentsByCatalogAlias('qualifications')
+
+  /** 获取安全生产动态 */
+  const getSafetyNews = (pageNum = 1, pageSize = 10) => getContentsByCatalogAlias('safety', pageNum, pageSize)
+
+  /** 获取招聘岗位列表 */
+  const getCareerList = (pageNum = 1, pageSize = 20) => getContentsByCatalogAlias('careers', pageNum, pageSize)
+
   /** HTML 内容净化（防 XSS） */
   const sanitizeHtml = (html: string): string => {
     if (!html) return ''
@@ -127,6 +136,9 @@ export const useApi = () => {
     getContentDetail,
     getFeaturedContents,
     getContentsByCatalogAlias,
+    getQualifications,
+    getSafetyNews,
+    getCareerList,
     sanitizeHtml
   }
 }

@@ -101,6 +101,9 @@
       </div>
     </section>
 
+    <!-- 项目地图分布 -->
+    <ProjectMap />
+
     <!-- 新闻动态 -->
     <section class="section news-section">
       <div class="container">
