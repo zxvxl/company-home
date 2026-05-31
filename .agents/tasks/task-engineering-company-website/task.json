@@ -1,0 +1,7 @@
+{
+  "task_id": "task-engineering-company-website",
+  "task_description": "Create a complete Halo CMS-based website for a water conservancy engineering company (水利工程公司), including deployment config, custom Halo 2.x theme with full templates and responsive CSS/JS, and comprehensive mock data for demonstration.",
+  "status": "in_progress",
+  "feature_order": ["FEAT-001", "FEAT-002", "FEAT-003"],
+  "blocked_reason": null
+}

@@ -1,0 +1,35 @@
+{
+  "id": "FEAT-003",
+  "type": "feat",
+  "description": "Create comprehensive mock/initialization data for the water conservancy engineering company website, including simulated news articles, project cases, page content, and a data initialization guide.",
+  "status": "pending",
+  "steps": [
+    "Create /projects/sandbox/company-home/init-data/README.md - Data initialization guide explaining how to import mock data into Halo: creating pages, posting articles, configuring menus, uploading attachments. Written in Chinese.",
+    "Create /projects/sandbox/company-home/init-data/posts/001-water-reservoir-completion.md - News article about a major reservoir project completion (某某水库加固工程顺利完工). Include frontmatter with title, date, category (公司动态), tags, excerpt.",
+    "Create /projects/sandbox/company-home/init-data/posts/002-flood-control-award.md - News about company receiving a flood control engineering award (公司荣获水利工程质量奖). Frontmatter + full article content.",
+    "Create /projects/sandbox/company-home/init-data/posts/003-irrigation-project-start.md - News about starting a new irrigation project (新灌区改造工程正式开工). Full article with project details.",
+    "Create /projects/sandbox/company-home/init-data/posts/004-safety-production.md - Article about safety production month activities (安全生产月活动纪实). Company culture content.",
+    "Create /projects/sandbox/company-home/init-data/posts/005-tech-innovation.md - Article about technical innovation in water conservancy (水利工程技术创新成果). Technical achievement content.",
+    "Create /projects/sandbox/company-home/init-data/posts/006-river-treatment.md - News about a river treatment project progress (河道综合治理工程进展顺利). Progress update style.",
+    "Create /projects/sandbox/company-home/init-data/pages/about.md - About Us page content for 虹远水利工程有限公司: company intro (founded 2003, specializing in water conservancy), development timeline (2003-2024 milestones), corporate culture (mission: 兴水利 惠民生, vision, values), honors and qualifications (水利工程施工总承包壹级 etc.).",
+    "Create /projects/sandbox/company-home/init-data/pages/business.md - Business areas page content with detailed descriptions of each service: 水库大坝工程 (reservoir/dam), 河道治理工程 (river treatment), 农田灌溉工程 (irrigation), 防洪排涝工程 (flood control), 水土保持工程 (soil/water conservation), 供水工程 (water supply). Each with scope, capabilities, and representative achievements.",
+    "Create /projects/sandbox/company-home/init-data/pages/cases.md - Engineering cases/portfolio page with 6 project entries: (1) 青山水库除险加固工程 - reservoir reinforcement, (2) 清河流域综合治理工程 - river basin treatment, (3) 万亩灌区节水改造工程 - irrigation renovation, (4) 城区防洪堤建设工程 - flood embankment, (5) 东部新城供水管网工程 - water supply network, (6) 山地水土保持示范工程 - soil conservation. Each with project name, location, scale, duration, description, image placeholder.",
+    "Create /projects/sandbox/company-home/init-data/pages/contact.md - Contact Us page content with company address (示例: 某某市水利大道188号), phone, fax, email, office hours, map placeholder description, and message form field definitions."
+  ],
+  "acceptance_criteria": [
+    "init-data/README.md provides clear data import instructions",
+    "6 news article markdown files exist in init-data/posts/ with proper frontmatter (title, date, category, tags, excerpt)",
+    "4 page content markdown files exist in init-data/pages/ (about, business, cases, contact)",
+    "All content is in Chinese and relevant to water conservancy engineering",
+    "Mock data is realistic and professional - suitable for demo purposes",
+    "Project cases include specific water conservancy project types (reservoirs, rivers, irrigation, flood control)",
+    "About page includes timeline from 2003-2024 with water conservancy milestones"
+  ],
+  "verification": [
+    "Verify all mock data files exist in init-data/posts/ and init-data/pages/",
+    "Verify markdown files have proper frontmatter format",
+    "Verify content is substantive (each post > 200 characters, each page > 500 characters)"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

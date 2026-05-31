@@ -1,0 +1,26 @@
+{
+  "id": "FEAT-001",
+  "type": "feat",
+  "description": "Create project root files: README.md, docker-compose.yml, .env.example, and documentation files (docs/deployment.md, docs/customization.md). These provide the deployment infrastructure and project documentation.",
+  "status": "in_progress",
+  "steps": [
+    "Create /projects/sandbox/company-home/README.md with comprehensive project overview, tech stack description, directory structure, quick start guide (docker-compose up), theme installation instructions, and development notes. Written in Chinese as the project targets a Chinese audience. The company is a water conservancy engineering (水利工程) company named '虹远水利工程有限公司'.",
+    "Create /projects/sandbox/company-home/docker-compose.yml with Halo 2.x service configuration (halohub/halo:2.x image, port 8090, volume mounts for data and themes, environment variables referencing .env file), and a PostgreSQL database service.",
+    "Create /projects/sandbox/company-home/.env.example with all required environment variables: database credentials, Halo admin credentials, site URL, and any other Halo configuration options with sensible defaults and comments.",
+    "Create /projects/sandbox/company-home/docs/deployment.md with detailed deployment guide covering: prerequisites (Docker, Docker Compose), step-by-step deployment, theme installation into Halo, initial setup, SSL/reverse proxy configuration notes, backup strategy.",
+    "Create /projects/sandbox/company-home/docs/customization.md with theme customization guide covering: color scheme modification, logo replacement, content management in Halo admin, menu configuration, adding new pages, modifying templates."
+  ],
+  "acceptance_criteria": [
+    "README.md exists and contains project description, structure overview, and quick start instructions",
+    "docker-compose.yml is valid YAML with Halo and PostgreSQL services properly configured",
+    ".env.example contains all necessary environment variables with comments",
+    "docs/deployment.md provides complete deployment instructions",
+    "docs/customization.md provides theme customization guidance"
+  ],
+  "verification": [
+    "Verify all files exist: README.md, docker-compose.yml, .env.example, docs/deployment.md, docs/customization.md",
+    "Validate YAML syntax of docker-compose.yml by parsing it"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}
