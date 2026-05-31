@@ -4,7 +4,7 @@
 # ============================================================
 
 # --- 构建阶段 ---
-FROM maven:3.9-eclipse-temurin-17 AS builder
+FROM docker.1ms.run/library/maven:3.9-eclipse-temurin-17 AS builder
 
 WORKDIR /build
 
@@ -25,7 +25,7 @@ COPY . .
 RUN mvn clean package -DskipTests -B
 
 # --- 运行阶段 ---
-FROM eclipse-temurin:17-jre-alpine
+FROM docker.1ms.run/library/eclipse-temurin:17-jre-alpine
 
 WORKDIR /app
 

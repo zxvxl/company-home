@@ -1,5 +1,5 @@
 # Build stage
-FROM node:20-alpine AS builder
+FROM docker.1ms.run/library/node:20-alpine AS builder
 
 WORKDIR /app
 
@@ -10,7 +10,7 @@ COPY . .
 RUN npm run build
 
 # Production stage
-FROM node:20-alpine AS runner
+FROM docker.1ms.run/library/node:20-alpine AS runner
 
 WORKDIR /app
 
