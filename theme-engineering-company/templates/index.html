@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="https://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="keywords" th:content="${theme.config.seo.keywords} ?: '水利工程,水库大坝,河道治理,农田灌溉,防洪排涝'" />
+  <meta name="description" th:content="${theme.config.seo.description} ?: '虹远水利工程有限公司专注水利工程建设二十余年'" />
+  <title th:text="${theme.config.basic.site_title} ?: '虹远水利工程有限公司'">虹远水利工程有限公司</title>
+  <link rel="icon" th:href="${theme.config.basic.favicon_url}" th:if="${theme.config.basic.favicon_url != null and theme.config.basic.favicon_url != ''}" />
+  <link rel="stylesheet" th:href="@{/assets/css/style.css}" />
+  <!-- Analytics Code -->
+  <th:block th:if="${theme.config.seo.analytics_code != null and theme.config.seo.analytics_code != ''}"
+            th:utext="${theme.config.seo.analytics_code}"></th:block>
+</head>
+<body class="page-home">
+
+  <!-- Header -->
+  <th:block th:replace="modules/header :: header"></th:block>
+
+  <!-- Hero Banner / Carousel -->
+  <section class="hero-banner" id="heroBanner">
+    <div class="banner-slides">
+      <!-- Slide 1 -->
+      <div class="banner-slide active" th:style="'background-image: url(' + (${theme.config.homepage.banner1_image} ?: '') + ')'">
+        <div class="banner-overlay"></div>
+        <div class="banner-content">
+          <h1 th:text="${theme.config.homepage.banner1_title} ?: '专注水利 造福民生'">专注水利 造福民生</h1>
+          <p th:text="${theme.config.homepage.banner1_subtitle} ?: '二十年专业水利工程建设经验'">二十年专业水利工程建设经验</p>
+          <a href="/about" class="btn btn-primary btn-lg">了解更多</a>
+        </div>
+      </div>
+      <!-- Slide 2 -->
+      <div class="banner-slide" th:style="'background-image: url(' + (${theme.config.homepage.banner2_image} ?: '') + ')'">
+        <div class="banner-overlay"></div>
+        <div class="banner-content">
+          <h1 th:text="${theme.config.homepage.banner2_title} ?: '科技兴水 品质为先'">科技兴水 品质为先</h1>
+          <p th:text="${theme.config.homepage.banner2_subtitle} ?: '引领水利工程技术创新发展'">引领水利工程技术创新发展</p>
+          <a href="/business" class="btn btn-primary btn-lg">业务领域</a>
+        </div>
+      </div>
+      <!-- Slide 3 -->
+      <div class="banner-slide" th:style="'background-image: url(' + (${theme.config.homepage.banner3_image} ?: '') + ')'">
+        <div class="banner-overlay"></div>
+        <div class="banner-content">
+          <h1 th:text="${theme.config.homepage.banner3_title} ?: '二十年匠心 筑水利丰碑'">二十年匠心 筑水利丰碑</h1>
+          <p th:text="${theme.config.homepage.banner3_subtitle} ?: '值得信赖的水利工程综合服务商'">值得信赖的水利工程综合服务商</p>
+          <a href="/cases" class="btn btn-primary btn-lg">工程案例</a>
+        </div>
+      </div>
+    </div>
+    <!-- Banner Controls -->
+    <button class="banner-prev" id="bannerPrev" aria-label="上一张">&#10094;</button>
+    <button class="banner-next" id="bannerNext" aria-label="下一张">&#10095;</button>
+    <!-- Dot Indicators -->
+    <div class="banner-dots" id="bannerDots">
+      <span class="dot active" data-index="0"></span>
+      <span class="dot" data-index="1"></span>
+      <span class="dot" data-index="2"></span>
+    </div>
+  </section>
+
+  <!-- Company Introduction Section -->
+  <section class="section section-intro">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">关于虹远</h2>
+        <p class="section-subtitle">专业水利工程综合服务商</p>
+        <div class="title-divider"></div>
+      </div>
+      <div class="intro-content">
+        <div class="intro-text">
+          <p>
+            虹远水利工程有限公司成立于2003年，是一家集水利工程规划、设计、施工、监理于一体的综合性水利工程企业。
+            公司拥有水利水电工程施工总承包壹级资质、水利行业设计乙级资质，具备承接各类大中型水利工程项目的能力。
+          </p>
+          <p>
+            二十年来，公司秉承"专注水利、造福民生"的企业理念，先后承建了数百项水利工程项目，
+            涵盖水库大坝、河道治理、农田灌溉、防洪排涝、水土保持及供水工程等多个领域，
+            积累了丰富的工程经验和良好的市场信誉。
+          </p>
+          <a href="/about" class="btn btn-outline">了解更多 &rarr;</a>
+        </div>
+        <div class="intro-image">
+          <div class="image-placeholder">
+            <span>公司形象图</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Core Business Section -->
+  <section class="section section-business bg-light">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">核心业务</h2>
+        <p class="section-subtitle">提供全方位水利工程解决方案</p>
+        <div class="title-divider"></div>
+      </div>
+      <div class="business-grid">
+        <!-- Business Card 1: 水库大坝工程 -->
+        <div class="business-card">
+          <div class="business-icon">
+            <span class="icon-shape">&#9961;</span>
+          </div>
+          <h3 class="business-title">水库大坝工程</h3>
+          <p class="business-desc">承接各类水库大坝的新建、加固、除险工程，确保水库安全运行，发挥防洪、灌溉、供水等综合效益。</p>
+          <a href="/business#reservoir" class="business-link">了解详情 &rarr;</a>
+        </div>
+        <!-- Business Card 2: 河道治理工程 -->
+        <div class="business-card">
+          <div class="business-icon">
+            <span class="icon-shape">&#127754;</span>
+          </div>
+          <h3 class="business-title">河道治理工程</h3>
+          <p class="business-desc">提供河道疏浚、护岸加固、生态修复等综合治理服务，改善河道行洪能力，恢复河流生态环境。</p>
+          <a href="/business#river" class="business-link">了解详情 &rarr;</a>
+        </div>
+        <!-- Business Card 3: 农田灌溉工程 -->
+        <div class="business-card">
+          <div class="business-icon">
+            <span class="icon-shape">&#127806;</span>
+          </div>
+          <h3 class="business-title">农田灌溉工程</h3>
+          <p class="business-desc">设计建设高效节水灌溉系统，涵盖渠道衬砌、管道灌溉、喷灌滴灌等，提高农业用水效率。</p>
+          <a href="/business#irrigation" class="business-link">了解详情 &rarr;</a>
+        </div>
+        <!-- Business Card 4: 防洪排涝工程 -->
+        <div class="business-card">
+          <div class="business-icon">
+            <span class="icon-shape">&#9748;</span>
+          </div>
+          <h3 class="business-title">防洪排涝工程</h3>
+          <p class="business-desc">建设防洪堤坝、排涝泵站、蓄滞洪区等工程设施，保障城乡居民生命财产安全。</p>
+          <a href="/business#flood" class="business-link">了解详情 &rarr;</a>
+        </div>
+        <!-- Business Card 5: 水土保持工程 -->
+        <div class="business-card">
+          <div class="business-icon">
+            <span class="icon-shape">&#127795;</span>
+          </div>
+          <h3 class="business-title">水土保持工程</h3>
+          <p class="business-desc">实施坡面治理、沟道治理、植被恢复等水土保持措施，有效防止水土流失，改善生态环境。</p>
+          <a href="/business#conservation" class="business-link">了解详情 &rarr;</a>
+        </div>
+        <!-- Business Card 6: 供水工程 -->
+        <div class="business-card">
+          <div class="business-icon">
+            <span class="icon-shape">&#128167;</span>
+          </div>
+          <h3 class="business-title">供水工程</h3>
+          <p class="business-desc">承接城镇供水、农村饮水安全工程，建设水厂、输配水管网，保障居民饮水安全。</p>
+          <a href="/business#supply" class="business-link">了解详情 &rarr;</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats / Achievement Section -->
+  <section class="section section-stats" id="statsSection">
+    <div class="stats-overlay"></div>
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item">
+          <span class="stat-number" data-target="500">0</span>
+          <span class="stat-suffix">+</span>
+          <p class="stat-label">完工项目</p>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number" data-target="20">0</span>
+          <span class="stat-suffix">+</span>
+          <p class="stat-label">服务年限</p>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number" data-target="300">0</span>
+          <span class="stat-suffix">+</span>
+          <p class="stat-label">团队规模</p>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number" data-target="200">0</span>
+          <span class="stat-suffix">+</span>
+          <p class="stat-label">合作客户</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Cases Section -->
+  <section class="section section-cases">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">工程案例</h2>
+        <p class="section-subtitle">匠心筑就精品工程</p>
+        <div class="title-divider"></div>
+      </div>
+      <div class="cases-grid">
+        <!-- Case Card 1 -->
+        <div class="case-card">
+          <div class="case-image">
+            <div class="image-placeholder">
+              <span>工程图片</span>
+            </div>
+            <span class="case-category">水库大坝</span>
+          </div>
+          <div class="case-info">
+            <h3 class="case-title">某市大型水库除险加固工程</h3>
+            <p class="case-desc">总库容5000万立方米水库大坝加固工程，包括坝体灌浆、溢洪道改建、放水设施更新等。</p>
+          </div>
+        </div>
+        <!-- Case Card 2 -->
+        <div class="case-card">
+          <div class="case-image">
+            <div class="image-placeholder">
+              <span>工程图片</span>
+            </div>
+            <span class="case-category">河道治理</span>
+          </div>
+          <div class="case-info">
+            <h3 class="case-title">XX河城区段综合治理工程</h3>
+            <p class="case-desc">全长12公里河道综合治理，包括河道清淤、生态护岸建设、景观绿化等。</p>
+          </div>
+        </div>
+        <!-- Case Card 3 -->
+        <div class="case-card">
+          <div class="case-image">
+            <div class="image-placeholder">
+              <span>工程图片</span>
+            </div>
+            <span class="case-category">农田灌溉</span>
+          </div>
+          <div class="case-info">
+            <h3 class="case-title">万亩高标准农田节水灌溉工程</h3>
+            <p class="case-desc">建设高效节水灌溉面积10000亩，铺设管道灌溉系统，年节水量达200万立方米。</p>
+          </div>
+        </div>
+        <!-- Case Card 4 -->
+        <div class="case-card">
+          <div class="case-image">
+            <div class="image-placeholder">
+              <span>工程图片</span>
+            </div>
+            <span class="case-category">供水工程</span>
+          </div>
+          <div class="case-info">
+            <h3 class="case-title">城乡一体化供水工程</h3>
+            <p class="case-desc">日供水能力5万吨的现代化水厂建设及配套管网铺设，惠及城乡居民30万人。</p>
+          </div>
+        </div>
+      </div>
+      <div class="section-more">
+        <a href="/cases" class="btn btn-outline">查看更多案例 &rarr;</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- News Section -->
+  <section class="section section-news bg-light">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">新闻动态</h2>
+        <p class="section-subtitle">了解公司最新资讯</p>
+        <div class="title-divider"></div>
+      </div>
+      <div class="news-grid">
+        <article class="news-card" th:each="post : ${posts.items}" th:if="${posts != null}">
+          <div class="news-image">
+            <div class="image-placeholder">
+              <span>新闻图片</span>
+            </div>
+          </div>
+          <div class="news-info">
+            <div class="news-meta">
+              <span class="news-date" th:text="${#dates.format(post.spec.publishTime, 'yyyy-MM-dd')}">2024-01-01</span>
+              <span class="news-category" th:if="${post.categories != null and !post.categories.isEmpty()}"
+                    th:text="${post.categories[0].spec.displayName}">公司新闻</span>
+            </div>
+            <h3 class="news-title">
+              <a th:href="@{'/archives/' + ${post.metadata.name}}" th:text="${post.spec.title}">新闻标题</a>
+            </h3>
+            <p class="news-excerpt" th:if="${post.status.excerpt != null}" th:text="${post.status.excerpt}">新闻摘要内容...</p>
+          </div>
+        </article>
+        <!-- Static fallback when no posts loaded -->
+        <article class="news-card" th:if="${posts == null or posts.items.isEmpty()}">
+          <div class="news-image">
+            <div class="image-placeholder"><span>新闻图片</span></div>
+          </div>
+          <div class="news-info">
+            <div class="news-meta">
+              <span class="news-date">2024-01-15</span>
+              <span class="news-category">公司新闻</span>
+            </div>
+            <h3 class="news-title"><a href="#">暂无新闻内容</a></h3>
+            <p class="news-excerpt">请在后台发布新闻文章后此处将自动显示最新动态。</p>
+          </div>
+        </article>
+      </div>
+      <div class="section-more">
+        <a href="/archives" class="btn btn-outline">更多新闻 &rarr;</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Partners Section -->
+  <section class="section section-partners" th:if="${theme.config.homepage.show_partners != false}">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">合作伙伴</h2>
+        <p class="section-subtitle">携手共进 合作共赢</p>
+        <div class="title-divider"></div>
+      </div>
+      <div class="partners-grid">
+        <div class="partner-item">
+          <div class="partner-logo-placeholder">合作伙伴A</div>
+        </div>
+        <div class="partner-item">
+          <div class="partner-logo-placeholder">合作伙伴B</div>
+        </div>
+        <div class="partner-item">
+          <div class="partner-logo-placeholder">合作伙伴C</div>
+        </div>
+        <div class="partner-item">
+          <div class="partner-logo-placeholder">合作伙伴D</div>
+        </div>
+        <div class="partner-item">
+          <div class="partner-logo-placeholder">合作伙伴E</div>
+        </div>
+        <div class="partner-item">
+          <div class="partner-logo-placeholder">合作伙伴F</div>
+        </div>
+        <div class="partner-item">
+          <div class="partner-logo-placeholder">合作伙伴G</div>
+        </div>
+        <div class="partner-item">
+          <div class="partner-logo-placeholder">合作伙伴H</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <th:block th:replace="modules/footer :: footer"></th:block>
+
+  <!-- JavaScript -->
+  <script th:src="@{/assets/js/main.js}"></script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<body>
+<footer th:fragment="footer" class="site-footer">
+  <div class="footer-main">
+    <div class="container">
+      <div class="footer-grid">
+        <!-- Column 1: Company Info -->
+        <div class="footer-col">
+          <div class="footer-logo">
+            <img th:if="${theme.config.basic.logo_url != null and theme.config.basic.logo_url != ''}"
+                 th:src="${theme.config.basic.logo_url}"
+                 alt="Logo" class="footer-logo-image" />
+            <h3 th:text="${theme.config.basic.site_title} ?: '虹远水利工程有限公司'">虹远水利工程有限公司</h3>
+          </div>
+          <p class="footer-desc">
+            专注水利工程建设二十余年，致力于为客户提供专业、高效、可靠的水利工程综合解决方案。公司拥有水利水电工程施工总承包壹级资质。
+          </p>
+          <div class="footer-social" th:if="${theme.config.social != null}">
+            <a th:if="${theme.config.social.wechat != null and theme.config.social.wechat != ''}"
+               href="javascript:void(0)" class="social-link" title="微信">
+              <span class="social-icon">微</span>
+            </a>
+            <a th:if="${theme.config.social.weibo != null and theme.config.social.weibo != ''}"
+               th:href="${theme.config.social.weibo}" class="social-link" title="微博" target="_blank">
+              <span class="social-icon">博</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Column 2: Quick Links -->
+        <div class="footer-col">
+          <h4 class="footer-title">快速链接</h4>
+          <ul class="footer-links">
+            <li><a href="/">首页</a></li>
+            <li><a href="/about">关于我们</a></li>
+            <li><a href="/business">业务领域</a></li>
+            <li><a href="/cases">工程案例</a></li>
+            <li><a href="/archives">新闻中心</a></li>
+            <li><a href="/contact">联系我们</a></li>
+          </ul>
+        </div>
+
+        <!-- Column 3: Business Areas -->
+        <div class="footer-col">
+          <h4 class="footer-title">业务领域</h4>
+          <ul class="footer-links">
+            <li><a href="/business#reservoir">水库大坝工程</a></li>
+            <li><a href="/business#river">河道治理工程</a></li>
+            <li><a href="/business#irrigation">农田灌溉工程</a></li>
+            <li><a href="/business#flood">防洪排涝工程</a></li>
+            <li><a href="/business#conservation">水土保持工程</a></li>
+            <li><a href="/business#supply">供水工程</a></li>
+          </ul>
+        </div>
+
+        <!-- Column 4: Contact Info -->
+        <div class="footer-col">
+          <h4 class="footer-title">联系我们</h4>
+          <ul class="footer-contact">
+            <li>
+              <span class="contact-icon">&#128205;</span>
+              <span th:text="${theme.config.contact.address} ?: '公司地址'">公司地址</span>
+            </li>
+            <li>
+              <span class="contact-icon">&#128222;</span>
+              <span th:text="${theme.config.contact.phone} ?: '400-XXX-XXXX'">400-XXX-XXXX</span>
+            </li>
+            <li>
+              <span class="contact-icon">&#9993;</span>
+              <span th:text="${theme.config.contact.email} ?: 'info@example.com'">info@example.com</span>
+            </li>
+            <li th:if="${theme.config.contact.fax != null and theme.config.contact.fax != ''}">
+              <span class="contact-icon">&#128224;</span>
+              <span th:text="${theme.config.contact.fax}">传真号码</span>
+            </li>
+          </ul>
+          <div class="footer-qr" th:if="${theme.config.contact.wechat_qr != null and theme.config.contact.wechat_qr != ''}">
+            <img th:src="${theme.config.contact.wechat_qr}" alt="微信公众号" class="qr-image" />
+            <p class="qr-text">扫码关注公众号</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Bar -->
+  <div class="footer-bottom">
+    <div class="container">
+      <div class="footer-bottom-content">
+        <p class="copyright">
+          &copy; <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}">2024</span>
+          <span th:text="${theme.config.basic.site_title} ?: '虹远水利工程有限公司'">虹远水利工程有限公司</span>
+          版权所有
+        </p>
+        <p class="icp" th:if="${theme.config.basic.icp_number != null and theme.config.basic.icp_number != ''}">
+          <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow"
+             th:text="${theme.config.basic.icp_number}">京ICP备XXXXXXXX号</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Back to Top Button -->
+  <button class="back-to-top" id="backToTop" aria-label="返回顶部">
+    <span>&#8593;</span>
+  </button>
+</footer>
+</body>
+</html>

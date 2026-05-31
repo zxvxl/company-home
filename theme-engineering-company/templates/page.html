@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="https://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="keywords" th:content="${theme.config.seo.keywords}" />
+  <meta name="description" th:content="${page.spec.title} + ' - ' + (${theme.config.basic.site_title} ?: '虹远水利工程有限公司')" />
+  <title th:text="${page.spec.title} + ' - ' + (${theme.config.basic.site_title} ?: '虹远水利工程有限公司')">页面标题</title>
+  <link rel="icon" th:href="${theme.config.basic.favicon_url}" th:if="${theme.config.basic.favicon_url != null and theme.config.basic.favicon_url != ''}" />
+  <link rel="stylesheet" th:href="@{/assets/css/style.css}" />
+</head>
+<body class="page-single">
+
+  <!-- Header -->
+  <th:block th:replace="modules/header :: header"></th:block>
+
+  <!-- Page Banner -->
+  <section class="page-banner">
+    <div class="page-banner-overlay"></div>
+    <div class="container">
+      <h1 class="page-banner-title" th:text="${page.spec.title}">页面标题</h1>
+      <!-- Breadcrumb -->
+      <nav class="breadcrumb" aria-label="面包屑导航">
+        <a href="/" class="breadcrumb-item">首页</a>
+        <span class="breadcrumb-separator">&gt;</span>
+        <span class="breadcrumb-item active" th:text="${page.spec.title}">当前页面</span>
+      </nav>
+    </div>
+  </section>
+
+  <!-- Page Content -->
+  <section class="section page-content-section">
+    <div class="container">
+      <div class="page-content-wrapper">
+        <article class="page-content article-content">
+          <div th:utext="${page.content.content}">
+            <p>页面内容将在此处显示</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <th:block th:replace="modules/footer :: footer"></th:block>
+
+  <!-- JavaScript -->
+  <script th:src="@{/assets/js/main.js}"></script>
+</body>
+</html>

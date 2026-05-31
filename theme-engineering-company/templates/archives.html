@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="https://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="keywords" th:content="${theme.config.seo.keywords}" />
+  <meta name="description" content="新闻中心 - 了解公司最新动态和行业资讯" />
+  <title th:text="'新闻中心 - ' + (${theme.config.basic.site_title} ?: '虹远水利工程有限公司')">新闻中心</title>
+  <link rel="icon" th:href="${theme.config.basic.favicon_url}" th:if="${theme.config.basic.favicon_url != null and theme.config.basic.favicon_url != ''}" />
+  <link rel="stylesheet" th:href="@{/assets/css/style.css}" />
+</head>
+<body class="page-archives">
+
+  <!-- Header -->
+  <th:block th:replace="modules/header :: header"></th:block>
+
+  <!-- Page Banner -->
+  <section class="page-banner">
+    <div class="page-banner-overlay"></div>
+    <div class="container">
+      <h1 class="page-banner-title">新闻中心</h1>
+      <nav class="breadcrumb" aria-label="面包屑导航">
+        <a href="/" class="breadcrumb-item">首页</a>
+        <span class="breadcrumb-separator">&gt;</span>
+        <span class="breadcrumb-item active">新闻中心</span>
+      </nav>
+    </div>
+  </section>
+
+  <!-- Archive Content -->
+  <section class="section archive-section">
+    <div class="container">
+      <!-- Category Filter Tabs -->
+      <div class="archive-filter">
+        <a href="/archives" class="filter-tab active">全部</a>
+        <a th:each="category : ${categories}"
+           th:href="@{'/categories/' + ${category.metadata.name}}"
+           th:text="${category.spec.displayName}"
+           class="filter-tab">分类</a>
+      </div>
+
+      <!-- Article List -->
+      <div class="archive-list">
+        <article class="archive-item" th:each="post : ${posts.items}">
+          <div class="archive-item-image">
+            <div class="image-placeholder">
+              <span>缩略图</span>
+            </div>
+          </div>
+          <div class="archive-item-content">
+            <div class="archive-item-meta">
+              <span class="meta-date" th:text="${#dates.format(post.spec.publishTime, 'yyyy-MM-dd')}">2024-01-01</span>
+              <span class="meta-category" th:if="${post.categories != null and !post.categories.isEmpty()}"
+                    th:text="${post.categories[0].spec.displayName}">分类</span>
+            </div>
+            <h2 class="archive-item-title">
+              <a th:href="@{'/archives/' + ${post.metadata.name}}" th:text="${post.spec.title}">文章标题</a>
+            </h2>
+            <p class="archive-item-excerpt" th:if="${post.status.excerpt != null}"
+               th:text="${#strings.abbreviate(post.status.excerpt, 100)}">文章摘要内容，最多显示100个字符...</p>
+          </div>
+        </article>
+      </div>
+
+      <!-- Empty State -->
+      <div class="archive-empty" th:if="${posts == null or posts.items.isEmpty()}">
+        <p>暂无文章内容，请在后台发布文章。</p>
+      </div>
+
+      <!-- Pagination -->
+      <nav class="pagination" th:if="${posts != null and posts.totalPages > 1}">
+        <a th:href="@{'/archives?page=' + ${posts.page - 1}}"
+           th:if="${posts.hasPrevious}"
+           class="page-link page-prev">&laquo; 上一页</a>
+        <span class="page-current">
+          第 <span th:text="${posts.page}">1</span> / <span th:text="${posts.totalPages}">1</span> 页
+        </span>
+        <a th:href="@{'/archives?page=' + ${posts.page + 1}}"
+           th:if="${posts.hasNext}"
+           class="page-link page-next">下一页 &raquo;</a>
+      </nav>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <th:block th:replace="modules/footer :: footer"></th:block>
+
+  <!-- JavaScript -->
+  <script th:src="@{/assets/js/main.js}"></script>
+</body>
+</html>
